@@ -29,9 +29,8 @@ exports.readAll = (callback) => {
         let newpromise = new Promise(function(resolve, reject) {
           fs.readFile(exports.dataDir + '/' + file, (err, data) => {
             if (err) {
-              reject(err,data);
+              reject(err, data);
             } else {
-              // console.log('I am resolving!!!!')
               resolve({id: path.basename(file, '.txt'), text: data.toString() });
             }
           });
@@ -39,9 +38,9 @@ exports.readAll = (callback) => {
         promisesArr.push(newpromise);
       });
       Promise.all(promisesArr).then((values) => {
-        callback(null,values);
+        callback(null, values);
       }).catch((reason) => {
-        callback(reason,null);
+        callback(reason, null);
       });
     }
   });
@@ -76,13 +75,13 @@ exports.update = (id, text, callback) => {
 
 exports.delete = (id, callback) => {
   fs.unlink(exports.dataDir + '/' + id + '.txt', (err, data) => {
-  if (err) {
-    callback(err);
-  } else {
-    callback(err, {text: id, id: id});
+    if (err) {
+      callback(err);
+    } else {
+      callback(err, {text: id, id: id});
     }
-  })
-}
+  });
+};
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
