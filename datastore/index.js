@@ -21,14 +21,31 @@ exports.create = (text, callback) => {
 
 exports.readAll = (callback) => {
   fs.readdir(exports.dataDir, (err, files) => {
-    if (err) {
-      console.log(err);
+    if (err || files.length === 0) {
+      console.log('I am calling an error');
+      callback(null, []);
     } else {
-      var fileArray = [];
-      files.forEach ( (file) => {
-        fileArray.push({id: path.basename(file, '.txt'), text: path.basename(file, '.txt') });
+      var promisesArr = [];
+      files.forEach((file) => {
+        let newpromise = new Promise(function(resolve, reject) {
+          fs.readFile(exports.dataDir + '/' + file, (err, data) => {
+            console.log('data: ', data.toString());
+            if (err) {
+              reject(err);
+            } else {
+              resolve({id: path.basename(file, '.txt'), text: data.toString() });
+            }
+          });
+        });
+        promisesArr.push(newpromise);
       });
-      callback(err, fileArray);
+      console.log('promiseArr', promisesArr[0]);
+      Promise.all(promisesArr).then((err, values) => {
+        callback(err, values);
+      }).catch((err, values) => {
+        console.log('err', err);
+        callback(err, values);
+      });
     }
   });
 };
