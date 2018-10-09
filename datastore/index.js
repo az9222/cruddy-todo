@@ -11,7 +11,7 @@ exports.create = (text, callback) => {
   counter.getNextUniqueId( (err, numberString) => {
     fs.writeFile(exports.dataDir + '/' + numberString + '.txt', text, (err) => {
       if (err) {
-        console.log(err);
+        callback(err);
       } else {
         callback(err, {text: text, id: numberString});
       }
@@ -22,29 +22,26 @@ exports.create = (text, callback) => {
 exports.readAll = (callback) => {
   fs.readdir(exports.dataDir, (err, files) => {
     if (err || files.length === 0) {
-      console.log('I am calling an error');
       callback(null, []);
     } else {
       var promisesArr = [];
       files.forEach((file) => {
         let newpromise = new Promise(function(resolve, reject) {
           fs.readFile(exports.dataDir + '/' + file, (err, data) => {
-            console.log('data: ', data.toString());
             if (err) {
-              reject(err);
+              reject(err,data);
             } else {
+              // console.log('I am resolving!!!!')
               resolve({id: path.basename(file, '.txt'), text: data.toString() });
             }
           });
         });
         promisesArr.push(newpromise);
       });
-      console.log('promiseArr', promisesArr[0]);
-      Promise.all(promisesArr).then((err, values) => {
-        callback(err, values);
-      }).catch((err, values) => {
-        console.log('err', err);
-        callback(err, values);
+      Promise.all(promisesArr).then((values) => {
+        callback(null,values);
+      }).catch((reason) => {
+        callback(reason,null);
       });
     }
   });
@@ -68,7 +65,7 @@ exports.update = (id, text, callback) => {
     } else {
       fs.writeFile(exports.dataDir + '/' + id + '.txt', text, (err) => {
         if (err) {
-          console.log(err);
+          callback(err);
         } else {
           callback(err, {text: text, id: id});
         }
