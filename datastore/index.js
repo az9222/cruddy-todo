@@ -3,81 +3,6 @@ const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
 
-<<<<<<< HEAD
-
-const Promise = require('bluebird');
-const readFilePromise = Promise.promisify(fs.readFile);
-
-// Public API - Fix these CRUD functions ///////////////////////////////////////
-
-exports.create = (text, callback) => {
-
-  counter.getNextUniqueId((err, id) => {
-    var filepath = path.join(exports.dataDir, `${id}.txt`);
-    fs.writeFile(filepath, text, (err) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, { id, text });
-      }
-    });
-  });
-  };
-
-exports.readAll = (callback) => {
-
-  fs.readdir(exports.dataDir, (err, files) => {
-    if (err) {
-      throw ('error reading data folder');
-    }
-    var data = _.map(files, (file) => {
-      var id = path.basename(file, '.txt');
-      var filepath = path.join(exports.dataDir, file);
-      return readFilePromise(filepath).then(fileData => {
-        return {
-          id: id,
-          text: fileData.toString()
-        };
-      });
-    });
-    Promise.all(data)
-      .then(items => callback(null, items), err => callback(err));
-  });
-  };
-
-exports.readOne = (id, callback) => {
-
-  var filepath = path.join(exports.dataDir, `${counter.reformatId(id)}.txt`);
-  fs.readFile(filepath, (err, fileData) => {
-    if (err) {
-      callback(err);
-    } else {
-      callback(null, { id, text: fileData.toString() });
-    }
-  });
-  };
-
-exports.update = (id, text, callback) => {
-
-  var filepath = path.join(exports.dataDir, `${counter.reformatId(id)}.txt`);
-  const flag = fs.constants.O_WRONLY | fs.constants.O_TRUNC;
-  fs.writeFile(filepath, text, { flag }, (err) => {
-    if (err) {
-      callback(err);
-    } else {
-      callback(null, { id, text });
-    }
-  });
-  };
-
-exports.delete = (id, callback) => {
-
-  var filepath = path.join(exports.dataDir, `${counter.reformatId(id)}.txt`);
-  fs.unlink(filepath, (err) => {
-    callback(err);
-  });
-  };
-=======
 var items = {};
 var data = [];
 // Public API - Fix these CRUD functions ///////////////////////////////////////
@@ -157,7 +82,6 @@ exports.delete = (id, callback) => {
     }
   });
 };
->>>>>>> bf0434bc2490c1222d277902e01f29484460c378
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
